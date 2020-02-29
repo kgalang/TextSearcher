@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TextSearcher {
-	protected ArrayList<String> tokens;
-	protected HashMap<String, ArrayList<Integer>> tokenLocations;
+	private ArrayList<String> tokens;
+	private HashMap<String, ArrayList<Integer>> tokenLocations;
 	private TextTokenizer tokenizer;
 	private String rePattern = "[a-zA-Z0-9']+";
 	/**
@@ -43,7 +43,7 @@ public class TextSearcher {
 		this.tokenLocations = new HashMap<>();
 		this.tokenizer = new TextTokenizer(fileContents, this.rePattern);
 
-//		Set up tokens list and locations map in one pass
+        // Set up tokens list and locations map in one pass
 		int i = 0;
 		while (this.tokenizer.hasNext()) {
 			String token = this.tokenizer.next();
@@ -74,31 +74,30 @@ public class TextSearcher {
 	 * @return One context string for each time the query word appears in the file.
 	 */
 	public String[] search(String queryWord,int contextWords) {
-		// TODO -- fill in implementation
-		List<String> results = new ArrayList<>();
-//		format query word to lowercase
-		String formattedWord = queryWord.toLowerCase().trim();
+		// Can add extra validation and formatting here to guard against edge cases.
+		String formattedQueryWord = queryWord.toLowerCase().trim();
 
-//		if not in token locations, return empty array
-		if (!this.tokenLocations.containsKey(formattedWord)){
-			return results.toArray(new String[0]);
+		if (!this.tokenLocations.containsKey(formattedQueryWord)){
+			return new String[0];
 		}
 
-//		else, get token locations
-		ArrayList<Integer> locations = this.tokenLocations.get(formattedWord);
-//		for each location
-//		get and add context for phrase
-//		add phrase to results array
-		locations.forEach((i) -> results.add(
+		List<String> results = new ArrayList<>();
+		ArrayList<Integer> matchedQueryWordIndices = this.tokenLocations.get(formattedQueryWord);
+
+		matchedQueryWordIndices.forEach((i) -> results.add(
 				_getPhrase(i, contextWords)
 		));
 
-		//		return results array
 		return results.toArray(new String[0]);
 	}
 
 	private String _getPhrase(int queryWordIndex, int contextWords) {
 		StringBuilder phrase = new StringBuilder(this.tokens.get(queryWordIndex));
+
+		if (contextWords <= 0) {
+			return phrase.toString();
+		}
+
 		String leftContext = _getContext(queryWordIndex, "left", contextWords);
 		String rightContext = _getContext(queryWordIndex, "right", contextWords);
 
@@ -110,9 +109,10 @@ public class TextSearcher {
 
 	private String _getContext(int queryWordIndex, String direction, int contextWords) {
 		StringBuilder context = new StringBuilder();
-		int moveOver = direction == "left" ? -1 : 1;
+
 		int contextWordCount = 0;
-		int tokenIndex = queryWordIndex + moveOver;
+		int iter = direction.equals("left") ? -1 : 1;
+		int tokenIndex = queryWordIndex + iter;
 
 		while (
 				contextWordCount < contextWords
@@ -120,17 +120,16 @@ public class TextSearcher {
 				&& tokenIndex < this.tokens.size()
 		) {
 			String token = this.tokens.get(tokenIndex);
-			if (this.tokenizer.isWord(token)) {
-				contextWordCount++;
-			}
 
-			if (direction == "left") {
+			if (this.tokenizer.isWord(token)) { contextWordCount++; }
+
+			if (direction.equals("left")) {
 				context.insert(0, token);
 			} else {
 				context.append(token);
 			}
 
-			tokenIndex += moveOver;
+			tokenIndex += iter;
 		}
 
 		return context.toString();
