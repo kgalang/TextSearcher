@@ -21,37 +21,6 @@ public class TextSearcherTest {
 		}
 	}
 
-
-
-//	/** Test behavior of init tokens*/
-//	@Test
-//	public void testTokensInit() throws Exception {
-//		ArrayList<String> expected = new ArrayList<>(
-//				Arrays.asList("Hi", " ", "StoryBlocks", ", ", "this", " ", "is", " ", "for", " ", "StoryBlocks", "!")
-//		);
-//		File file = new File("files/test_excerpt.txt");
-//		TextSearcher searcher = new TextSearcher(file);
-//
-//		Assert.assertEquals(expected.size(), searcher.tokens.size());
-//		for (int i = 0; i < expected.size(); i++) {
-//			Assert.assertEquals(expected.get(i), searcher.tokens.get(i));
-//		}
-//	}
-//
-//	private ArrayList<Number> _list(Number... numbers) {
-//		return new ArrayList<>(
-//				Arrays.asList(numbers)
-//		);
-//	}
-//	/** Test behavior of init tokenLocations*/
-//	@Test
-//	public void testTokenLocationsInit() throws Exception {
-//		HashMap<String, ArrayList<Number>> expected = new HashMap<>();
-//		expected.put("hi", _list(0));
-//
-//	}
-//
-
 	/** Simplest possible case, no context and the word occurs exactly once. */
 	@Test
 	public void testOneHitNoContext() throws Exception {
